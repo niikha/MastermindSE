@@ -27,11 +27,14 @@ public class Game {
     public Pair<Integer, Integer> validateGuess(int[] guess) throws Exception {
 
         //check if guess is same length as code
+
         if(guess.length != codeLength){
             throw new Exception(
                     "Length of guess (" + guess.length + ") does not match code length (" + codeLength + ")"
             );
         }
+
+        //get number of black and white pins to be returned
 
         int black = 0;
         int white = 0;
