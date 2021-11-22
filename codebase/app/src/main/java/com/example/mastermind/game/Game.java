@@ -1,9 +1,6 @@
 package com.example.mastermind.game;
 
-import android.util.Pair;
-
 import java.util.Arrays;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Game {
@@ -88,9 +85,9 @@ public class Game {
 
     /**
      *
-     * @return First integer representing the number of black pins (colour and position correct), second integer representing the number of white pins (only colour correct)
+     * @return A new GuessValidationResult indicating the number of black and white pins
      */
-    public Pair<Integer, Integer> validateGuess(int[] guess) throws Exception {
+    public GuessValidationResult validateGuess(int[] guess) throws Exception {
 
         //check if guess is same length as code
         if(guess.length != codeLength){
@@ -109,7 +106,7 @@ public class Game {
         for(int i = 0; i < codeLength; i++){
             if (guess[i] == code [i])
                 black++;
-            else if (Arrays.asList(code).contains(guess[i]))
+            else if (ArrayContainsValue(code, guess[i]))
                 white++;
         }
 
@@ -119,6 +116,20 @@ public class Game {
         else if (currentRound == maxRounds && gameWon == false)
             gameLost=true;
 
-        return new Pair<>(black, white);
+        return new GuessValidationResult(black, white);
+    }
+
+    /**
+     * Checks if the array contains an integer of the specified value
+     * @param array Array to be searched
+     * @param value Value to be searched for
+     * @return True if array contains said value, otherwise false
+     */
+    private boolean ArrayContainsValue(int[] array, int value) {
+        for (int i : array) {
+            if (i == value)
+                return true;
+        }
+        return false;
     }
 }
