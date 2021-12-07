@@ -3,31 +3,33 @@ package com.example.mastermind;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.ViewGroup;
-import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    TableLayout tableLayout;
+    LinearLayout linearLayout;
+
+    private final int columnCount = 4;
+    private final int rowCount = 8;
+
+    private int[] colCoorinates; //x = 4
+    private int[] rowCoordinates;//y = 8
+    private int[][] field;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Instatiate all table rows
+        //Get Gameboard Layout
+         linearLayout = findViewById(R.id.gameboard);
 
-        // Create a ConstraintLayout in which to add the ImageView
-         tableLayout = findViewById(R.id.gameboard);
-
+         //setup for field
+        generateCoordinates();
+        generateField();
+        drawField();
+        
         // Add the ImageView to the layout and set the layout as the content view.
         drawPin(1, 1, 1);
         drawPin(1, 2, 2);
@@ -41,7 +43,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void drawPin(int row, int column, int id){
+    public void refreshField(){
+        linearLayout.removeAllViews();
+        drawField();
+    }
+
+    public void drawField(){
+        for (int i = 0; i < columnCount; i++){
+            for (int j = 0; j < rowCount; j++){
+                drawPin(i, j, field[i][j]);
+            }
+        }
+    }
+
+    public void drawPin(int column, int row, int id){
         ImageView view = getPinFromID(id);
     }
 
@@ -79,5 +94,25 @@ public class MainActivity extends AppCompatActivity {
         view.setX(10);
         view.setY(10);
         return view;
+    }
+
+    //Grid coordinates in dpi
+    private void generateCoordinates(){
+        this.colCoorinates = new int[]{};
+        this.rowCoordinates = new int[]{};
+    }
+
+    private void generateField(){
+        this.field = new int[columnCount][rowCount];
+        clearField();
+    }
+
+
+    private void clearField(){
+        for (int i = 0; i < columnCount; i++){
+            for (int j = 0; j < rowCount; j++){
+                field[i][j] = 0;
+            }
+        }
     }
 }
