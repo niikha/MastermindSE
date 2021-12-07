@@ -17,7 +17,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     TableLayout tableLayout;
-    List<TableRow> rows;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Instatiate all table rows
-        InstantiateRows(8);
 
         // Create a ConstraintLayout in which to add the ImageView
          tableLayout = findViewById(R.id.gameboard);
@@ -45,24 +43,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void drawPin(int row, int column, int id){
         ImageView view = getPinFromID(id);
-        LinearLayout llayout = new LinearLayout(this);
-        llayout.addView(view);
-        TableRow c_row = rows.get(row);
-        tableLayout.addView(llayout);
-    }
-
-    public void InstantiateRows(int count){
-        rows = new ArrayList<TableRow>();
-
-        for (int i = 0; i <count; i++){
-            TableRow row = new TableRow(this);
-            rows.add(row);
-        }
     }
 
     public ImageView getPinFromID(int id){
         ImageView view = new ImageView(this);
         switch (id){
+            case 0:
+                view.setImageResource(R.drawable.pin_empty);
             case 1:
                 view.setImageResource(R.drawable.pin_black);
                 break;
@@ -73,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                 view.setImageResource(R.drawable.pin_green);
                 break;
             case 4:
-                view.setImageResource(R.drawable.pin_grey);
+                view.setImageResource(R.drawable.pin_cyan);
                 break;
             case 5:
                 view.setImageResource(R.drawable.pin_purple);
