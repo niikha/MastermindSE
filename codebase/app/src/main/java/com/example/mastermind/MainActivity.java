@@ -3,6 +3,8 @@ package com.example.mastermind;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -20,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
         //Get Gameboard Layout
@@ -29,13 +34,8 @@ public class MainActivity extends AppCompatActivity {
         generateCoordinates();
         generateField();
         drawField();
-        
+
         // Add the ImageView to the layout and set the layout as the content view.
-        drawPin(1, 1, 1);
-        drawPin(1, 2, 2);
-        drawPin(1, 3, 3);
-        drawPin(1, 4, 4);
-        drawPin(1, 5, 5);
 
 
         //constraintLayout.addView(gridLayout);
@@ -58,6 +58,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void drawPin(int column, int row, int id){
         ImageView view = getPinFromID(id);
+        int x = colCoorinates[column]; //später aus tabelle
+        int y = rowCoordinates[row];
+        view.setX(x);
+        view.setY(y);
+        //view.setLeft(x);
+        //view.setTop(y);
+        view.setMaxHeight(50);
+        view.setMaxWidth(50);
+        //LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        //params.leftMargin=x;
+        //params.topMargin=y;
+        linearLayout.addView(view/*, params*/);
     }
 
     public ImageView getPinFromID(int id){
@@ -65,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         switch (id){
             case 0:
                 view.setImageResource(R.drawable.pin_empty);
+                break;
             case 1:
                 view.setImageResource(R.drawable.pin_black);
                 break;
@@ -91,15 +104,14 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         view.setAdjustViewBounds(true);
-        view.setX(10);
-        view.setY(10);
         return view;
     }
 
     //Grid coordinates in dpi
     private void generateCoordinates(){
-        this.colCoorinates = new int[]{};
-        this.rowCoordinates = new int[]{};
+        this.colCoorinates = new int[]{108, 324, 540, 756, 972};
+        this.rowCoordinates = new int[]{87, 261, 435, 609, 783, 957, 1131, 1305, 1479, 1653, 1827};
+        //T0D0: evtl automatisch berechnen
     }
 
     private void generateField(){
@@ -111,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     private void clearField(){
         for (int i = 0; i < columnCount; i++){
             for (int j = 0; j < rowCount; j++){
-                field[i][j] = 0;
+                this.field[i][j] = 0;
             }
         }
     }
