@@ -88,18 +88,22 @@ public class MainActivity extends AppCompatActivity {
      *  The pin's colour ID
      */
     public void drawPin(int column, int row, int id){
+
+        //get ImageView
         ImageView view = getPinFromID(id);
-        int x = colCoordinates[column];
-        int y = rowCoordinates[row];
+
+        //set size
+        int size = (int)(relativeTextureSize() * 1.3);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size);
+
+        //set x and y coordinates for pin (Center of texture should be on point (default would be top left corner) -> Offset by half of size in -x and -y direction)
+        int offset = size / 2;
+        int x = colCoordinates[column] - offset;
+        int y = rowCoordinates[row] - offset;
         view.setX(x);
         view.setY(y);
-        int size = (int)(relativeTextureSize() * 1.3);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
-        params.gravity=0;
-        params.weight=0;
-        params.setMarginEnd(0);
-        params.setMargins(0,0,0,0);
-        params.setMarginStart(0);
+
+        //Add pin to layout
         relativeLayout.addView(view, params);
     }
 
