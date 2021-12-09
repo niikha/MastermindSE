@@ -33,9 +33,11 @@ public class MainActivity extends AppCompatActivity {
          relativeLayout = findViewById(R.id.gameboard);
 
          //setup for field
+
         generateCoordinates();
         generateField();
         drawField();
+
     }
 
     /**
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private void clearField(){
         for (int i = 0; i < columnCount; i++){
             for (int j = 0; j < rowCount; j++){
-                this.field[i][j] = 10;
+                this.field[i][j] = 5;
             }
         }
     }
@@ -91,7 +93,8 @@ public class MainActivity extends AppCompatActivity {
         int y = rowCoordinates[row];
         view.setX(x);
         view.setY(y);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(50, 50);
+        int size = (int)(relativeTextureSize() * 1.3);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(size, size);
         params.gravity=0;
         params.weight=0;
         params.setMarginEnd(0);
@@ -186,4 +189,12 @@ public class MainActivity extends AppCompatActivity {
         return coords;
     }
 
+    /**
+     * Relative texture size is equivalent to 100 pixels on a display with 1920 pixels in height
+     */
+    private int relativeTextureSize(){
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getSize(size);
+        return size.y * 100 / 1920;
+    }
 }
