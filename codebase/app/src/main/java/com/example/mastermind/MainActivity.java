@@ -2,6 +2,7 @@ package com.example.mastermind;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -35,20 +36,19 @@ public class MainActivity extends AppCompatActivity {
         generateCoordinates();
         generateField();
         drawField();
-
-        // Add the ImageView to the layout and set the layout as the content view.
-
-
-        //constraintLayout.addView(gridLayout);
-        //setContentView(constraintLayout);
-
     }
 
+    /**
+     * Clears the entire field and draws it again
+     */
     public void refreshField(){
         relativeLayout.removeAllViews();
         drawField();
     }
 
+    /**
+     * Draws the entire field
+     */
     public void drawField(){
         for (int i = 0; i < columnCount; i++){
             for (int j = 0; j < rowCount; j++){
@@ -57,16 +57,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Draws a specified pin to a specified position
+     * @param column
+     *  Column in which to draw the pin
+     * @param row
+     *  Row in which to draw the pin
+     * @param id
+     *  The pin's colour ID
+     */
     public void drawPin(int column, int row, int id){
         ImageView view = getPinFromID(id);
-        int x = colCoordinates[column]; //später aus tabelle
+        int x = colCoordinates[column];
         int y = rowCoordinates[row];
         view.setX(x);
         view.setY(y);
-        //view.setLeft(1000);
-        //view.setTop(1000);
-        //view.setMaxHeight(50);
-        //view.setMaxWidth(50);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(50, 50);
         params.gravity=0;
         params.weight=0;
@@ -76,6 +81,13 @@ public class MainActivity extends AppCompatActivity {
         relativeLayout.addView(view, params);
     }
 
+    /**
+     * Generates an ImageView with a pin of the specified colour ID
+     * @param id
+     *  Colour ID for the pin (0 for 'empty')
+     * @return
+     *  An ImageView with a pin in the specified colour
+     */
     public ImageView getPinFromID(int id){
         ImageView view = new ImageView(this);
         switch (id){
@@ -111,19 +123,58 @@ public class MainActivity extends AppCompatActivity {
         return view;
     }
 
-    //Grid coordinates in dpi
+    /**
+     * Generates the coordinates for the game grid
+     */
     private void generateCoordinates(){
-        this.colCoordinates = new int[]{108, 324, 540, 756, 972};
-        this.rowCoordinates = new int[]{87, 261, 435, 609, 783, 957, 1131, 1305, 1479, 1653, 1827};
-        //T0D0: evtl automatisch berechnen
+
+        //get display dimensions
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getSize(size);
+        int sizeX = size.x;
+        int sizeY = size.y;
+
+        //calculate X coordinates (columns)
+        this.colCoordinates = calculateGridCoordinates(sizeX, columnCount);
+
+        //calculate Y coordinates (rows)
+        this.rowCoordinates = calculateGridCoordinates(sizeY, rowCount);
     }
 
+    /**
+     * Calculates the coordinate values for a single dimension
+     * @param totalLength
+     *  Total dimension length in pixels
+     * @param count
+     *  Number of coordinates to be returned
+     * @return
+     *  A array of length 'count', containing the values
+     */
+    private int[] calculateGridCoordinates(int totalLength, int count){
+
+        int[] coords = new int[count];
+        int margin = totalLength / count;
+        int current = margin / 2;
+
+        for (int i = 0; i < count; i++){
+            coords[i] = current;
+            current += margin;
+        }
+
+        return coords;
+    }
+
+    /**
+     * Instantiate the game field with empty pins
+     */
     private void generateField(){
         this.field = new int[columnCount][rowCount];
         clearField();
     }
 
-
+    /**
+     * Set every pin in the field to empty (pin-id = 0)
+     */
     private void clearField(){
         for (int i = 0; i < columnCount; i++){
             for (int j = 0; j < rowCount; j++){
