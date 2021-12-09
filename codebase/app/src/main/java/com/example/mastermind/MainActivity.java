@@ -197,4 +197,5 @@ public class MainActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getSize(size);
         return size.y * 100 / 1920;
     }
+    //Test
 }
