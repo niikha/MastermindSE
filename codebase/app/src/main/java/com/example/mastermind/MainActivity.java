@@ -4,10 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Point;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,7 +19,10 @@ public class MainActivity extends AppCompatActivity {
 
     private int[] colCoordinates;
     private int[] rowCoordinates;
-    private int[][] field;
+    private int[][] gameField;
+    private int[] selection = new int[]{-1, -1, -1, -1};
+    private int currentSelectionIndex;
+    private int currentRow = 8; //später weg, nur zum testen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,27 +37,29 @@ public class MainActivity extends AppCompatActivity {
 
          //setup for field
 
+        currentSelectionIndex=0; //remove later or call at every new guess
         generateCoordinates();
-        generateField();
-        drawField();
-
+        generateGameField();
+        drawGameField();
+        drawFunctionalField();
     }
 
     /**
-     * Clears the entire field and draws it again
+     * Clears the entire grid and draws game and functional field again
      */
-    public void refreshField(){
+    public void refreshGrid(){
         relativeLayout.removeAllViews();
-        drawField();
+        drawGameField();
+        drawFunctionalField();
     }
 
     /**
-     * Draws the entire field
+     * Draws the entire game field
      */
-    public void drawField(){
-        for (int i = 0; i < columnCount; i++){
-            for (int j = 0; j < rowCount; j++){
-                drawPin(i, j, field[i][j]);
+    public void drawGameField(){
+        for (int i = 0; i < columnCount - 1; i++){
+            for (int j = 1; j < rowCount - 2; j++){
+                drawPin(i, j, gameField[i][j], false);
             }
         }
     }
@@ -62,22 +67,35 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Instantiates the game field with empty pins
      */
-    private void generateField(){
-        this.field = new int[columnCount][rowCount];
-        clearField();
+    private void generateGameField(){
+        this.gameField = new int[columnCount - 1][rowCount - 2];
+        clearGameField();
     }
 
     /**
-     * Sets every pin in the field to empty (pin-id = 0)
+     * Sets every pin in the playing field to empty (pin-id = 0)
      */
-    private void clearField(){
-        for (int i = 0; i < columnCount; i++){
-            for (int j = 0; j < rowCount; j++){
-                this.field[i][j] = 5;
+    private void clearGameField(){
+        for (int i = 1; i < rowCount - 2; i++){
+            for (int j = 0; j < columnCount - 1; j++){
+                this.gameField[j][i] = 0;
             }
         }
     }
 
+    /**
+     * Draws the question mark pins at the top, the selection pins at the bottom and empty textures in the evaluation column
+     */
+    private void drawFunctionalField(){
+        for (int i = 0; i < columnCount - 1; i++){
+            drawPin(i, 0, 9, false);//this.gameField[i][0] = 9;
+            drawPin(i, rowCount - 2, i + 1, true);//this.gameField[i][rowCount-2] = i+1;
+            drawPin(i, rowCount - 1, i + 5, true);//this.gameField[i][rowCount-1] = i + columnCount;
+        }
+        for (int i = 1; i < rowCount - 2; i++){
+            drawPin(columnCount - 1, i, -1, false);//this.gameField[columnCount-1][i] = -1;
+        }
+    }
     /**
      * Draws a specified pin to a specified position
      * @param column
@@ -87,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
      * @param id
      *  The pin's colour ID
      */
-    public void drawPin(int column, int row, int id){
+    public void drawPin(int column, int row, int id, boolean isSelectionButton){
 
         //get ImageView
         ImageView view = getPinFromID(id);
@@ -103,6 +121,11 @@ public class MainActivity extends AppCompatActivity {
         view.setX(x);
         view.setY(y);
 
+        //if the pin is a selection button, set the on-click listener
+        if(isSelectionButton){
+            view.setOnClickListener(v -> selectPin(id));
+        }
+
         //Add pin to layout
         relativeLayout.addView(view, params);
     }
@@ -117,6 +140,9 @@ public class MainActivity extends AppCompatActivity {
     public ImageView getPinFromID(int id){
         ImageView view = new ImageView(this);
         switch (id){
+            case -1:
+                //return empty view
+                break;
             case 0:
                 view.setImageResource(R.drawable.pin_empty);
                 break;
@@ -143,6 +169,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 8:
                 view.setImageResource(R.drawable.pin_yellow);
+                break;
+            case 9:
+                view.setImageResource(R.drawable.pin_unknown);
                 break;
             default:
                 view.setImageResource(R.drawable.invalid_texture);
@@ -200,5 +229,15 @@ public class MainActivity extends AppCompatActivity {
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
         return size.y * 100 / 1920;
+    }
+
+    private void selectPin(int id){
+        this.selection[currentSelectionIndex] = id;
+        this.gameField[currentSelectionIndex][currentRow] = id;
+        currentSelectionIndex++;
+        if(currentSelectionIndex == 4){
+            currentSelectionIndex = 0;
+        }
+        refreshGrid();
     }
 }
