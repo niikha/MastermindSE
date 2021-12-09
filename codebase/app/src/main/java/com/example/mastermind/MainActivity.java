@@ -7,16 +7,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    LinearLayout linearLayout;
+    RelativeLayout relativeLayout;
 
     private final int columnCount = 4;
     private final int rowCount = 8;
 
-    private int[] colCoorinates; //x = 4
-    private int[] rowCoordinates;//y = 8
+    private int[] colCoordinates;
+    private int[] rowCoordinates;
     private int[][] field;
 
     @Override
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Get Gameboard Layout
-         linearLayout = findViewById(R.id.gameboard);
+         relativeLayout = findViewById(R.id.gameboard);
 
          //setup for field
         generateCoordinates();
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshField(){
-        linearLayout.removeAllViews();
+        relativeLayout.removeAllViews();
         drawField();
     }
 
@@ -58,18 +59,21 @@ public class MainActivity extends AppCompatActivity {
 
     public void drawPin(int column, int row, int id){
         ImageView view = getPinFromID(id);
-        int x = colCoorinates[column]; //später aus tabelle
+        int x = colCoordinates[column]; //später aus tabelle
         int y = rowCoordinates[row];
         view.setX(x);
         view.setY(y);
-        //view.setLeft(x);
-        //view.setTop(y);
-        view.setMaxHeight(50);
-        view.setMaxWidth(50);
-        //LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        //params.leftMargin=x;
-        //params.topMargin=y;
-        linearLayout.addView(view/*, params*/);
+        //view.setLeft(1000);
+        //view.setTop(1000);
+        //view.setMaxHeight(50);
+        //view.setMaxWidth(50);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(50, 50);
+        params.gravity=0;
+        params.weight=0;
+        params.setMarginEnd(0);
+        params.setMargins(0,0,0,0);
+        params.setMarginStart(0);
+        relativeLayout.addView(view, params);
     }
 
     public ImageView getPinFromID(int id){
@@ -109,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Grid coordinates in dpi
     private void generateCoordinates(){
-        this.colCoorinates = new int[]{108, 324, 540, 756, 972};
+        this.colCoordinates = new int[]{108, 324, 540, 756, 972};
         this.rowCoordinates = new int[]{87, 261, 435, 609, 783, 957, 1131, 1305, 1479, 1653, 1827};
         //T0D0: evtl automatisch berechnen
     }
