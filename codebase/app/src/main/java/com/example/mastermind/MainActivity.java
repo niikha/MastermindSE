@@ -58,6 +58,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Instantiates the game field with empty pins
+     */
+    private void generateField(){
+        this.field = new int[columnCount][rowCount];
+        clearField();
+    }
+
+    /**
+     * Sets every pin in the field to empty (pin-id = 0)
+     */
+    private void clearField(){
+        for (int i = 0; i < columnCount; i++){
+            for (int j = 0; j < rowCount; j++){
+                this.field[i][j] = 10;
+            }
+        }
+    }
+
+    /**
      * Draws a specified pin to a specified position
      * @param column
      *  Column in which to draw the pin
@@ -118,13 +137,16 @@ public class MainActivity extends AppCompatActivity {
             case 8:
                 view.setImageResource(R.drawable.pin_yellow);
                 break;
+            default:
+                view.setImageResource(R.drawable.invalid_texture);
+                break;
         }
         view.setAdjustViewBounds(true);
         return view;
     }
 
     /**
-     * Generates the coordinates for the game grid
+     * Instantiates and calculates the coordinates for the game grid
      */
     private void generateCoordinates(){
 
@@ -154,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
 
         int[] coords = new int[count];
         int margin = totalLength / count;
-        int current = margin / 2;
+        int current = margin / 2; //Coordinates should be the middle of the grid cells -> offset by half
 
         for (int i = 0; i < count; i++){
             coords[i] = current;
@@ -164,22 +186,4 @@ public class MainActivity extends AppCompatActivity {
         return coords;
     }
 
-    /**
-     * Instantiate the game field with empty pins
-     */
-    private void generateField(){
-        this.field = new int[columnCount][rowCount];
-        clearField();
-    }
-
-    /**
-     * Set every pin in the field to empty (pin-id = 0)
-     */
-    private void clearField(){
-        for (int i = 0; i < columnCount; i++){
-            for (int j = 0; j < rowCount; j++){
-                this.field[i][j] = 0;
-            }
-        }
-    }
 }
