@@ -13,8 +13,8 @@ public class MainActivity extends AppCompatActivity {
 
     RelativeLayout relativeLayout;
 
-    private final int columnCount = 4;
-    private final int rowCount = 8;
+    private final int columnCount = 5;
+    private final int rowCount = 11;
 
     private int[] colCoordinates;
     private int[] rowCoordinates;
