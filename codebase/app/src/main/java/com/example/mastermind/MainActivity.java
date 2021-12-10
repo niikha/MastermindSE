@@ -4,12 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Point;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.example.mastermind.Util.ArrayUtil;
+import com.example.mastermind.Util.DisplayUtil;
 import com.example.mastermind.game.Game;
 import com.example.mastermind.game.GuessValidationResult;
 
@@ -17,13 +18,12 @@ public class MainActivity extends AppCompatActivity {
 
     RelativeLayout relativeLayout;
 
-    private final int columnCount = 5;
     private final int rowCount = 11;
+    private final int columnCount = 5;
 
     private int[] colCoordinates;
     private int[] rowCoordinates;
-    private int[][] gameField;
-    private int[] selection = new int[]{-1, -1, -1, -1};
+    private int[][] gameField; //row first, column second
     private int currentSelectionIndex;
     private int currentRow;
     private Game game;
@@ -60,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
      * Draws the entire game field
      */
     public void drawGameField(){
-        for (int i = 0; i < columnCount - 1; i++){
-            for (int j = 1; j < rowCount - 2; j++){
+        for (int i = 1; i < rowCount - 2; i++){
+            for (int j = 0; j < columnCount - 1; j++){
                 drawPin(i, j, gameField[i][j], false);
             }
         }
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
      * Instantiates the game field with empty pins
      */
     private void generateGameField(){
-        this.gameField = new int[columnCount - 1][rowCount - 2];
+        this.gameField = new int[rowCount - 2][columnCount - 1];
         clearGameField();
     }
 
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private void clearGameField(){
         for (int i = 1; i < rowCount - 2; i++){
             for (int j = 0; j < columnCount - 1; j++){
-                this.gameField[j][i] = 0;
+                this.gameField[i][j] = 0;
             }
         }
     }
@@ -91,12 +91,12 @@ public class MainActivity extends AppCompatActivity {
      */
     private void drawFunctionalField(){
         for (int i = 0; i < columnCount - 1; i++){
-            drawPin(i, 0, 9, false);//this.gameField[i][0] = 9;
-            drawPin(i, rowCount - 2, i + 1, true);//this.gameField[i][rowCount-2] = i+1;
-            drawPin(i, rowCount - 1, i + 5, true);//this.gameField[i][rowCount-1] = i + columnCount;
+            drawPin(0, i, 9, false);//this.gameField[i][0] = 9;
+            drawPin(rowCount - 2, i, i + 1, true);
+            drawPin(rowCount - 1, i,  i + 5, true);
         }
         for (int i = 1; i < rowCount - 2; i++){
-            drawPin(columnCount - 1, i, -1, false);//this.gameField[columnCount-1][i] = -1;
+            drawPin(i, columnCount - 1, -1, false);
         }
         drawGuessButton();
     }
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
      * @param id
      *  The pin's colour ID
      */
-    public void drawPin(int column, int row, int id, boolean isSelectionButton){
+    public void drawPin(int row, int column, int id, boolean isSelectionButton){
 
         //get ImageView
         ImageView view = getPinFromID(id);
@@ -221,33 +221,10 @@ public class MainActivity extends AppCompatActivity {
         int sizeY = size.y;
 
         //calculate X coordinates (columns)
-        this.colCoordinates = calculateGridCoordinates(sizeX, columnCount);
+        this.colCoordinates = DisplayUtil.calculateGridCoordinates(sizeX, columnCount);
 
         //calculate Y coordinates (rows)
-        this.rowCoordinates = calculateGridCoordinates(sizeY, rowCount);
-    }
-
-    /**
-     * Calculates the coordinate values for a single dimension
-     * @param totalLength
-     *  Total dimension length in pixels
-     * @param count
-     *  Number of coordinates to be returned
-     * @return
-     *  A array of length 'count', containing the values
-     */
-    private int[] calculateGridCoordinates(int totalLength, int count){
-
-        int[] coords = new int[count];
-        int margin = totalLength / count;
-        int current = margin / 2; //Coordinates should be the middle of the grid cells -> offset by half
-
-        for (int i = 0; i < count; i++){
-            coords[i] = current;
-            current += margin;
-        }
-
-        return coords;
+        this.rowCoordinates = DisplayUtil.calculateGridCoordinates(sizeY, rowCount);
     }
 
     /**
@@ -260,8 +237,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectPin(int id){
-        this.selection[currentSelectionIndex] = id;
-        this.gameField[currentSelectionIndex][currentRow] = id;
+        this.gameField[currentRow][currentSelectionIndex] = id;
         currentSelectionIndex++;
         if(currentSelectionIndex == 4){
             currentSelectionIndex = 0;
@@ -270,7 +246,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void submitGuess(){
-        if (!Util.ArrayContainsValue(selection, -1)){
+        int[] selection = ArrayUtil.arrayFromField(this.gameField, currentRow, ArrayUtil.ArrayDimensions.ROW);
+        if (!ArrayUtil.ArrayContainsValue(selection, -1)){
             try{
                 GuessValidationResult result = this.game.validateGuess(selection);
                 if(!checkGameStatus()){
@@ -278,7 +255,6 @@ public class MainActivity extends AppCompatActivity {
                     displayResult(result);
                 }
                 currentSelectionIndex = 0;
-                selection = Util.fillArray(4, -1);
             }
             catch (Exception e) {
                 //T0D0: Fehlermeldung anzeigen

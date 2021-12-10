@@ -1,6 +1,6 @@
 package com.example.mastermind.game;
 
-import com.example.mastermind.Util;
+import com.example.mastermind.Util.ArrayUtil;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
@@ -108,7 +108,7 @@ public class Game {
         for(int i = 0; i < codeLength; i++){
             if (guess[i] == code [i])
                 black++;
-            else if (Util.ArrayContainsValue(code, guess[i]))
+            else if (ArrayUtil.ArrayContainsValue(code, guess[i]))
                 white++;
         }
 
