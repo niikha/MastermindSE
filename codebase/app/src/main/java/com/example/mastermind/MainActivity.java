@@ -10,6 +10,9 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.example.mastermind.game.Game;
+import com.example.mastermind.game.GuessValidationResult;
+
 public class MainActivity extends AppCompatActivity {
 
     RelativeLayout relativeLayout;
@@ -22,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private int[][] gameField;
     private int[] selection = new int[]{-1, -1, -1, -1};
     private int currentSelectionIndex;
-    private int currentRow = 8; //später weg, nur zum testen
+    private int currentRow; //später weg, nur zum testen
+    private Game game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +40,11 @@ public class MainActivity extends AppCompatActivity {
          relativeLayout = findViewById(R.id.gameboard);
 
          //setup for field
-
+        currentRow = 8;
         currentSelectionIndex=0; //remove later or call at every new guess
         generateCoordinates();
         generateGameField();
+        startNewGame();
         drawGameField();
         drawFunctionalField();
     }
@@ -84,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Draws the question mark pins at the top, the selection pins at the bottom and empty textures in the evaluation column
+     * Draws the question mark pins at the top, the selection pins and button at the bottom and empty textures in the evaluation column
      */
     private void drawFunctionalField(){
         for (int i = 0; i < columnCount - 1; i++){
@@ -95,7 +100,32 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 1; i < rowCount - 2; i++){
             drawPin(columnCount - 1, i, -1, false);//this.gameField[columnCount-1][i] = -1;
         }
+        drawGuessButton();
     }
+
+    private void drawGuessButton(){
+
+        //set image source
+        ImageView view = new ImageView(this);
+        view.setImageResource(R.drawable.btn_guess_temp);
+
+        //set size
+        int size = (int)(relativeTextureSize() * 1.4);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size * 2);
+
+        //set x and y coordinates
+        int x = colCoordinates[columnCount-1] - size / 2;
+        int y = (rowCoordinates[rowCount-2] + rowCoordinates[rowCount-1]) / 2 - size;
+        view.setX(x);
+        view.setY(y);
+
+        //set on-click listener
+        view.setOnClickListener(v -> submitGuess());
+
+        relativeLayout.addView(view, params);
+    }
+
+
     /**
      * Draws a specified pin to a specified position
      * @param column
@@ -239,5 +269,46 @@ public class MainActivity extends AppCompatActivity {
             currentSelectionIndex = 0;
         }
         refreshGrid();
+    }
+
+    private void submitGuess(){
+        try{
+            GuessValidationResult result = this.game.validateGuess(selection);
+            if(!checkGameStatus()){
+                currentRow = rowCount - 3 - game.getCurrentRound();
+            }
+            currentSelectionIndex = 0;
+        }
+        catch (Exception e) {
+            //T0D0: Fehlermeldung anzeigen
+        }
+    }
+
+    /**
+     * Checks if game is won or lost
+     * @return
+     *  Returns true if game is won or lost, otherwise false
+     */
+    private boolean checkGameStatus(){
+        if (this.game.isGameWon()){
+            //do something
+            return true;
+        }
+        if (this.game.isGameLost()){
+            //do something
+            return true;
+        }
+        return false;
+    }
+
+    private void startNewGame(){
+        this.game = new Game(8, 4, 8, false);
+        this.game.createRandomCode();
+        clearGameField();
+        refreshGrid();
+    }
+
+    private void displayResult(GuessValidationResult result){
+        //T0D0
     }
 }
