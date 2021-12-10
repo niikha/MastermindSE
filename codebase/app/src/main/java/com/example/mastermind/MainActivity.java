@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void submitGuess(){
         int[] selection = ArrayUtil.arrayFromField(this.gameField, currentRow, ArrayUtil.ArrayDimensions.ROW);
-        if (!ArrayUtil.ArrayContainsValue(selection, -1)){
+        if (!ArrayUtil.ArrayContainsValue(selection, 0)){
             try{
                 GuessValidationResult result = this.game.validateGuess(selection);
                 if(!checkGameStatus()){
