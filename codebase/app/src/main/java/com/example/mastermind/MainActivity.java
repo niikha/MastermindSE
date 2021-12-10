@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private int[][] gameField;
     private int[] selection = new int[]{-1, -1, -1, -1};
     private int currentSelectionIndex;
-    private int currentRow; //später weg, nur zum testen
+    private int currentRow;
     private Game game;
 
     @Override
@@ -39,9 +39,7 @@ public class MainActivity extends AppCompatActivity {
         //Get Gameboard Layout
          relativeLayout = findViewById(R.id.gameboard);
 
-         //setup for field
-        currentRow = 8;
-        currentSelectionIndex=0; //remove later or call at every new guess
+        //setup for field and start new game
         generateCoordinates();
         generateGameField();
         startNewGame();
@@ -272,15 +270,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void submitGuess(){
-        try{
-            GuessValidationResult result = this.game.validateGuess(selection);
-            if(!checkGameStatus()){
-                currentRow = rowCount - 3 - game.getCurrentRound();
+        if (!Util.ArrayContainsValue(selection, -1)){
+            try{
+                GuessValidationResult result = this.game.validateGuess(selection);
+                if(!checkGameStatus()){
+                    currentRow = rowCount - 3 - game.getCurrentRound();
+                    displayResult(result);
+                }
+                currentSelectionIndex = 0;
+                selection = Util.fillArray(4, -1);
             }
-            currentSelectionIndex = 0;
-        }
-        catch (Exception e) {
-            //T0D0: Fehlermeldung anzeigen
+            catch (Exception e) {
+                //T0D0: Fehlermeldung anzeigen
+            }
         }
     }
 
@@ -306,6 +308,8 @@ public class MainActivity extends AppCompatActivity {
         this.game.createRandomCode();
         clearGameField();
         refreshGrid();
+        currentRow = rowCount - 3;
+        currentSelectionIndex = 0;
     }
 
     private void displayResult(GuessValidationResult result){
