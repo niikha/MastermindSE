@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private int[][] gameField; //row first, column second
     private int currentSelectionIndex;
     private int currentRow;
+    private boolean gameStopped; //'true' if game is won or lost, 'false' if game is in progress
     private Game game;
 
     @Override
@@ -90,15 +91,30 @@ public class MainActivity extends AppCompatActivity {
      * Draws the question mark pins at the top, the selection pins and button at the bottom and empty textures in the evaluation column
      */
     private void drawFunctionalField(){
+
+        //for each column
         for (int i = 0; i < columnCount - 1; i++){
-            drawPin(0, i, 9, false);//this.gameField[i][0] = 9;
-            drawPin(rowCount - 2, i, i + 1, true);
-            drawPin(rowCount - 1, i,  i + 5, true);
+
+            //draw question mark pin
+            drawPin(0, i, 9, false);
+
+            //draw selection pins (if the game is stopped, the 'win' or 'loss' message is displayed instead)
+            if (!gameStopped){
+                drawPin(rowCount - 2, i, i + 1, true);
+                drawPin(rowCount - 1, i,  i + 5, true);
+            }
         }
+
+        //set last column (where guess results will be shown) to empty
         for (int i = 1; i < rowCount - 2; i++){
             drawPin(i, columnCount - 1, -1, false);
         }
-        drawGuessButton();
+
+        //Draw reset if game is stopped) or guess button to bottom right corner
+        if (gameStopped)
+            drawResetButton();
+        else
+            drawGuessButton();
     }
 
     private void drawGuessButton(){
@@ -155,6 +171,49 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Add pin to layout
+        relativeLayout.addView(view, params);
+    }
+
+    private void drawResultView(boolean isGameWon){
+
+        //get ImageView
+        ImageView view = new ImageView(this);
+        if (isGameWon)
+            view.setImageResource(R.drawable.result_won_temp);
+        else
+            view.setImageResource(R.drawable.result_lost_temp);
+
+        //set size
+        int size = (int)(relativeTextureSize() * 3.2);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size * 2, size);
+
+        //set x and y coordinates
+        int x = (colCoordinates[((columnCount - 1 )/ 2)] + colCoordinates[((columnCount - 1 )/ 2) - 1]) / 2 - size;
+        int y = (rowCoordinates[rowCount-2] + rowCoordinates[rowCount-1]) / 2 - size / 2;
+        view.setX(x);
+        view.setY(y);
+
+        relativeLayout.addView(view, params);
+    }
+
+    private void drawResetButton(){
+        //set image source
+        ImageView view = new ImageView(this);
+        view.setImageResource(R.drawable.btn_retry_temp);
+
+        //set size
+        int size = (int)(relativeTextureSize() * 1.4);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size * 2);
+
+        //set x and y coordinates
+        int x = colCoordinates[columnCount-1] - size / 2;
+        int y = (rowCoordinates[rowCount-2] + rowCoordinates[rowCount-1]) / 2 - size;
+        view.setX(x);
+        view.setY(y);
+
+        //set on-click listener
+        view.setOnClickListener(v -> startNewGame());
+
         relativeLayout.addView(view, params);
     }
 
@@ -237,27 +296,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectPin(int id){
-        this.gameField[currentRow][currentSelectionIndex] = id;
-        currentSelectionIndex++;
-        if(currentSelectionIndex == 4){
-            currentSelectionIndex = 0;
+        if (!gameStopped){
+            this.gameField[currentRow][currentSelectionIndex] = id;
+            currentSelectionIndex++;
+            if(currentSelectionIndex == 4){
+                currentSelectionIndex = 0;
+            }
+            refreshGrid();
         }
-        refreshGrid();
     }
 
     private void submitGuess(){
-        int[] selection = ArrayUtil.arrayFromField(this.gameField, currentRow, ArrayUtil.ArrayDimensions.ROW);
-        if (!ArrayUtil.ArrayContainsValue(selection, 0)){
-            try{
-                GuessValidationResult result = this.game.validateGuess(selection);
-                if(!checkGameStatus()){
-                    currentRow = rowCount - 3 - game.getCurrentRound();
-                    displayResult(result);
+        if (!gameStopped){
+            int[] selection = ArrayUtil.arrayFromField(this.gameField, currentRow, ArrayUtil.ArrayDimensions.ROW);
+            if (!ArrayUtil.ArrayContainsValue(selection, 0)){
+                try{
+                    GuessValidationResult result = this.game.validateGuess(selection);
+                    if(!checkGameStatus()){
+                        currentRow = rowCount - 3 - game.getCurrentRound();
+                        displayGuessResult(result);
+                    }
+                    currentSelectionIndex = 0;
                 }
-                currentSelectionIndex = 0;
-            }
-            catch (Exception e) {
-                //T0D0: Fehlermeldung anzeigen
+                catch (Exception e) {
+                    //T0D0: Fehlermeldung anzeigen
+                }
             }
         }
     }
@@ -269,17 +332,18 @@ public class MainActivity extends AppCompatActivity {
      */
     private boolean checkGameStatus(){
         if (this.game.isGameWon()){
-            //do something
+            gameEnd(true);
             return true;
         }
         if (this.game.isGameLost()){
-            //do something
+            gameEnd(false);
             return true;
         }
         return false;
     }
 
     private void startNewGame(){
+        gameStopped = false;
         this.game = new Game(8, 4, 8, false);
         this.game.createRandomCode();
         clearGameField();
@@ -288,7 +352,13 @@ public class MainActivity extends AppCompatActivity {
         currentSelectionIndex = 0;
     }
 
-    private void displayResult(GuessValidationResult result){
+    private void displayGuessResult(GuessValidationResult result){
         //T0D0
+    }
+
+    private void gameEnd(boolean isGameWon){
+        gameStopped = true;
+        refreshGrid();
+        drawResultView(isGameWon);
     }
 }
