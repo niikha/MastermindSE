@@ -1,9 +1,11 @@
 package com.example.mastermind;
 
+import androidx.annotation.DrawableRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Point;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -24,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private int[] colCoordinates;
     private int[] rowCoordinates;
     private int[][] gameField; //row first, column second
-    private int currentSelectionIndex;
-    private int currentRow;
+    private int currentSelectionIndex;  //position in the current row where the next pin will be placed
+    private int currentRow; //index of the current row in the game field
     private boolean gameStopped; //'true' if game is won or lost, 'false' if game is in progress
     private Game game;
 
@@ -44,8 +46,6 @@ public class MainActivity extends AppCompatActivity {
         generateCoordinates();
         generateGameField();
         startNewGame();
-        drawGameField();
-        drawFunctionalField();
     }
 
     /**
@@ -110,35 +110,12 @@ public class MainActivity extends AppCompatActivity {
             drawPin(i, columnCount - 1, -1, false);
         }
 
-        //Draw reset if game is stopped) or guess button to bottom right corner
+        //Draw reset (if game is stopped) or guess button to bottom right corner
         if (gameStopped)
             drawResetButton();
         else
             drawGuessButton();
     }
-
-    private void drawGuessButton(){
-
-        //set image source
-        ImageView view = new ImageView(this);
-        view.setImageResource(R.drawable.btn_guess_temp);
-
-        //set size
-        int size = (int)(relativeTextureSize() * 1.4);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size * 2);
-
-        //set x and y coordinates
-        int x = colCoordinates[columnCount-1] - size / 2;
-        int y = (rowCoordinates[rowCount-2] + rowCoordinates[rowCount-1]) / 2 - size;
-        view.setX(x);
-        view.setY(y);
-
-        //set on-click listener
-        view.setOnClickListener(v -> submitGuess());
-
-        relativeLayout.addView(view, params);
-    }
-
 
     /**
      * Draws a specified pin to a specified position
@@ -174,6 +151,11 @@ public class MainActivity extends AppCompatActivity {
         relativeLayout.addView(view, params);
     }
 
+    /**
+     * Draws the 'you win' or 'you loose' message
+     * @param isGameWon
+     *  True if game was won, false if game was lost
+     */
     private void drawResultView(boolean isGameWon){
 
         //get ImageView
@@ -196,10 +178,24 @@ public class MainActivity extends AppCompatActivity {
         relativeLayout.addView(view, params);
     }
 
+    /**
+     * Draws the button for submitting the guess to the bottom right corner
+     */
+    private void drawGuessButton(){
+        drawBottomButton(R.drawable.btn_guess_temp, v -> submitGuess());
+    }
+
+    /**
+     * Draws the button for resetting the game to the bottom right corner
+     */
     private void drawResetButton(){
+        drawBottomButton(R.drawable.btn_retry_temp, v -> startNewGame());
+    }
+
+    private void drawBottomButton(@DrawableRes int resourceId, View.OnClickListener listener){
         //set image source
         ImageView view = new ImageView(this);
-        view.setImageResource(R.drawable.btn_retry_temp);
+        view.setImageResource(resourceId);
 
         //set size
         int size = (int)(relativeTextureSize() * 1.4);
@@ -212,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
         view.setY(y);
 
         //set on-click listener
-        view.setOnClickListener(v -> startNewGame());
+        view.setOnClickListener(listener);
 
         relativeLayout.addView(view, params);
     }
@@ -295,24 +291,46 @@ public class MainActivity extends AppCompatActivity {
         return size.y * 100 / 1920;
     }
 
+    /**
+     * On-Click listener for pin selection buttons; adds the pin to the field
+     * @param id
+     *  The colour ID of the pin
+     */
     private void selectPin(int id){
+
+        //Button should only work if game is running
         if (!gameStopped){
+            //draw the pin to the current position
             this.gameField[currentRow][currentSelectionIndex] = id;
+
+            //move on to the next position (roll over if currently at last position)
             currentSelectionIndex++;
-            if(currentSelectionIndex == 4){
+            if(currentSelectionIndex == columnCount - 1){
                 currentSelectionIndex = 0;
             }
             refreshGrid();
         }
     }
 
+    /**
+     * On-Click listener for submit button; submits the current guess to validation and checks the result
+     */
     private void submitGuess(){
+
+        //Button should only work if game is running
         if (!gameStopped){
+
+            //get the pins in the current row and check if none is empty (ID 0)
             int[] selection = ArrayUtil.arrayFromField(this.gameField, currentRow, ArrayUtil.ArrayDimensions.ROW);
             if (!ArrayUtil.ArrayContainsValue(selection, 0)){
+
+                //submit the guess
                 try{
                     GuessValidationResult result = this.game.validateGuess(selection);
-                    if(!checkGameStatus()){
+
+                    //check the result
+                    if(!checkHasGameEnded()){
+                        //if the game hasn't ended, move to the next row
                         currentRow = rowCount - 3 - game.getCurrentRound();
                         displayGuessResult(result);
                     }
@@ -326,26 +344,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Checks if game is won or lost
+     * Checks if game is won or lost, ends game if true
      * @return
-     *  Returns true if game is won or lost, otherwise false
+     *  Returns 'true' if game is won or lost, 'false' if not
      */
-    private boolean checkGameStatus(){
+    private boolean checkHasGameEnded(){
         if (this.game.isGameWon()){
-            gameEnd(true);
+            endGame(true);
             return true;
         }
         if (this.game.isGameLost()){
-            gameEnd(false);
+            endGame(false);
             return true;
         }
         return false;
     }
 
+    /**
+     * Creates a new game, resets grid and selection
+     */
     private void startNewGame(){
-        gameStopped = false;
         this.game = new Game(8, 4, 8, false);
         this.game.createRandomCode();
+        gameStopped = false;
         clearGameField();
         refreshGrid();
         currentRow = rowCount - 3;
@@ -356,7 +377,12 @@ public class MainActivity extends AppCompatActivity {
         //T0D0
     }
 
-    private void gameEnd(boolean isGameWon){
+    /**
+     * Stops the game and draws the result view
+     * @param isGameWon
+     *  Indicates if the game was won or lost
+     */
+    private void endGame(boolean isGameWon){
         gameStopped = true;
         refreshGrid();
         drawResultView(isGameWon);
