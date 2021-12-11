@@ -63,12 +63,12 @@ public class Game {
 
         for (int i = 0; i<codeLength; i++){
 
-            //generate random value
-            int nextValue = ThreadLocalRandom.current().nextInt(variants);
+            //generate random value between 1 and the number of different colours
+            int nextValue = ThreadLocalRandom.current().nextInt(variants) + 1;
 
             //if code already contains value, generate more values until value is unique
             if(!doubleValuesAllowed)
-                while (Arrays.asList(code).contains(nextValue)){
+                while (ArrayUtil.ArrayContainsValue(code, nextValue)){
                     nextValue = ThreadLocalRandom.current().nextInt(variants);
                 }
 

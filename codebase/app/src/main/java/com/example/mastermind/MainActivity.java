@@ -378,6 +378,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Displays the code in place of the question mark pins
+     */
+    private void displayCode(){
+        int[] code = this.game.getCode();
+        for (int i = 0; i < code.length; i++){
+            drawPin(0, i, code[i], false);
+        }
+    }
+
+    /**
      * Stops the game and draws the result view
      * @param isGameWon
      *  Indicates if the game was won or lost
@@ -385,6 +395,7 @@ public class MainActivity extends AppCompatActivity {
     private void endGame(boolean isGameWon){
         gameStopped = true;
         refreshGrid();
+        displayCode();
         drawResultView(isGameWon);
     }
 }
