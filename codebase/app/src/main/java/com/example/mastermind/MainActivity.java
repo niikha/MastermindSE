@@ -1,9 +1,14 @@
 package com.example.mastermind;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -30,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private int currentRow; //index of the current row in the game field
     private boolean gameStopped; //'true' if game is won or lost, 'false' if game is in progress
     private Game game;
+    private GuessValidationResult[] results; //The results of past and current guesses
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +59,14 @@ public class MainActivity extends AppCompatActivity {
      */
     public void refreshGrid(){
         relativeLayout.removeAllViews();
+        drawBackground();
         drawGameField();
         drawFunctionalField();
+        displayGuessResults();
+    }
+
+    private void drawBackground(){
+        relativeLayout.setBackground(getResources().getDrawable(R.drawable.background));
     }
 
     /**
@@ -63,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     public void drawGameField(){
         for (int i = 1; i < rowCount - 2; i++){
             for (int j = 0; j < columnCount - 1; j++){
-                drawPin(i, j, gameField[i][j], false);
+                drawPin(i, j, gameField[i][j]);
             }
         }
     }
@@ -96,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < columnCount - 1; i++){
 
             //draw question mark pin
-            drawPin(0, i, 9, false);
+            drawPin(0, i, 9);
 
             //draw selection pins (if the game is stopped, the 'win' or 'loss' message is displayed instead)
             if (!gameStopped){
@@ -107,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
         //set last column (where guess results will be shown) to empty
         for (int i = 1; i < rowCount - 2; i++){
-            drawPin(i, columnCount - 1, -1, false);
+            drawPin(i, columnCount - 1, -1);
         }
 
         //Draw reset (if game is stopped) or guess button to bottom right corner
@@ -118,6 +130,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Draws a specified non-button pin to a specified position
+     * @param column
+     *  Column in which to draw the pin
+     * @param row
+     *  Row in which to draw the pin
+     * @param id
+     *  The pin's colour ID
+     */
+    public void drawPin(int row, int column, int id){
+        drawPin(row, column, id, false);
+    }
+
+    /**
      * Draws a specified pin to a specified position
      * @param column
      *  Column in which to draw the pin
@@ -125,6 +150,8 @@ public class MainActivity extends AppCompatActivity {
      *  Row in which to draw the pin
      * @param id
      *  The pin's colour ID
+     * @param isSelectionButton
+     *  Whether the pin is one of the buttons used to select pins
      */
     public void drawPin(int row, int column, int id, boolean isSelectionButton){
 
@@ -192,6 +219,13 @@ public class MainActivity extends AppCompatActivity {
         drawBottomButton(R.drawable.btn_retry_temp, v -> startNewGame());
     }
 
+    /**
+     * Draws a button in the bottom right corner
+     * @param resourceId
+     *  Drawable resource for the button image
+     * @param listener
+     *  On-Click listener for the button
+     */
     private void drawBottomButton(@DrawableRes int resourceId, View.OnClickListener listener){
         //set image source
         ImageView view = new ImageView(this);
@@ -330,9 +364,10 @@ public class MainActivity extends AppCompatActivity {
 
                     //check the result
                     if(!checkHasGameEnded()){
-                        //if the game hasn't ended, move to the next row
+                        //if the game hasn't ended, add result to results and move to the next row
+                        results[rowCount - 3 - currentRow] = result;
+                        drawGuessResult(currentRow, result);
                         currentRow = rowCount - 3 - game.getCurrentRound();
-                        displayGuessResult(result);
                     }
                     currentSelectionIndex = 0;
                 }
@@ -367,14 +402,84 @@ public class MainActivity extends AppCompatActivity {
         this.game = new Game(8, 4, 8, false);
         this.game.createRandomCode();
         gameStopped = false;
+        this.results = new GuessValidationResult[rowCount-2];
         clearGameField();
         refreshGrid();
         currentRow = rowCount - 3;
         currentSelectionIndex = 0;
     }
 
-    private void displayGuessResult(GuessValidationResult result){
-        //T0D0
+    private void displayGuessResults(){
+        for (int i = 0; i < this.results.length; i++){
+            GuessValidationResult result = this.results[i];
+            if (result != null)
+                drawGuessResult(rowCount - 3 - i, result);
+        }
+    }
+
+    private void drawGuessResult(int row, GuessValidationResult result){
+        ImageView viewBlack = new ImageView(this);
+        ImageView viewWhite = new ImageView(this);
+
+        //get texture for black number
+        switch (result.GetBlack()){
+            case 0:
+                viewBlack.setImageResource(R.drawable.b_null);
+                break;
+            case 1:
+                viewBlack.setImageResource(R.drawable.b_one);
+                break;
+            case 2:
+                viewBlack.setImageResource(R.drawable.b_two);
+                break;
+            case 3:
+                viewBlack.setImageResource(R.drawable.b_three);
+                break;
+            case 4:
+                viewBlack.setImageResource(R.drawable.b_four);
+                break;
+            default:
+                viewBlack.setImageResource(R.drawable.invalid_texture);
+                break;
+        }
+
+        //get texture for white number
+        switch (result.GetWhite()){
+            case 0:
+                viewWhite.setImageResource(R.drawable.w_null);
+                break;
+            case 1:
+                viewWhite.setImageResource(R.drawable.w_one);
+                break;
+            case 2:
+                viewWhite.setImageResource(R.drawable.w_two);
+                break;
+            case 3:
+                viewWhite.setImageResource(R.drawable.w_three);
+                break;
+            case 4:
+                viewWhite.setImageResource(R.drawable.w_four);
+                break;
+            default:
+                viewWhite.setImageResource(R.drawable.invalid_texture);
+                break;
+        }
+
+        //set size
+        int size = (int)(relativeTextureSize() * 0.7);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size * 2);
+
+        //get x and y for both views
+        int xwhite = colCoordinates[columnCount-1];
+        int xblack = xwhite - (int)(1.5 * size);
+        int y = rowCoordinates[row] - size;
+        viewBlack.setX(xblack);
+        viewBlack.setY(y);
+        viewWhite.setX(xwhite);
+        viewWhite.setY(y);
+
+        relativeLayout.addView(viewBlack, params);
+        relativeLayout.addView(viewWhite, params);
     }
 
     /**
@@ -383,7 +488,7 @@ public class MainActivity extends AppCompatActivity {
     private void displayCode(){
         int[] code = this.game.getCode();
         for (int i = 0; i < code.length; i++){
-            drawPin(0, i, code[i], false);
+            drawPin(0, i, code[i]);
         }
     }
 
