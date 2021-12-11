@@ -1,14 +1,9 @@
 package com.example.mastermind;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -72,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Draws the entire game field
      */
-    public void drawGameField(){
+    private void drawGameField(){
         for (int i = 1; i < rowCount - 2; i++){
             for (int j = 0; j < columnCount - 1; j++){
                 drawPin(i, j, gameField[i][j]);
@@ -104,6 +99,9 @@ public class MainActivity extends AppCompatActivity {
      */
     private void drawFunctionalField(){
 
+        //draw the slightly darker background behind the selection buttons
+        drawButtonBackground();
+
         //for each column
         for (int i = 0; i < columnCount - 1; i++){
 
@@ -129,6 +127,25 @@ public class MainActivity extends AppCompatActivity {
             drawGuessButton();
     }
 
+    private void drawButtonBackground(){
+
+        //get imageView
+        ImageView view = new ImageView(this);
+        view.setImageResource(R.drawable.transparent_box);
+
+        //set size
+        int size = (int)(relativeTextureSize() * 3.5);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int)(size*5), size);
+
+        //set x and y
+        int x = (colCoordinates[((columnCount - 1 )/ 2)] + colCoordinates[((columnCount - 1 )/ 2) - 1]) / 2 - (int)(size*1.8);
+        int y = (rowCoordinates[rowCount-1] + rowCoordinates[rowCount-2]) / 2 - (int)(size*0.5);
+        view.setX(x);
+        view.setY(y);
+
+        relativeLayout.addView(view, params);
+    }
+
     /**
      * Draws a specified non-button pin to a specified position
      * @param column
@@ -138,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
      * @param id
      *  The pin's colour ID
      */
-    public void drawPin(int row, int column, int id){
+    private void drawPin(int row, int column, int id){
         drawPin(row, column, id, false);
     }
 
@@ -153,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
      * @param isSelectionButton
      *  Whether the pin is one of the buttons used to select pins
      */
-    public void drawPin(int row, int column, int id, boolean isSelectionButton){
+    private void drawPin(int row, int column, int id, boolean isSelectionButton){
 
         //get ImageView
         ImageView view = getPinFromID(id);
@@ -193,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
             view.setImageResource(R.drawable.result_lost_temp);
 
         //set size
-        int size = (int)(relativeTextureSize() * 3.2);
+        int size = (int)(relativeTextureSize() * 3.5);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size * 2, size);
 
         //set x and y coordinates
@@ -254,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
      * @return
      *  An ImageView with a pin in the specified colour
      */
-    public ImageView getPinFromID(int id){
+    private ImageView getPinFromID(int id){
         ImageView view = new ImageView(this);
         switch (id){
             case -1:
@@ -358,15 +375,15 @@ public class MainActivity extends AppCompatActivity {
             int[] selection = ArrayUtil.arrayFromField(this.gameField, currentRow, ArrayUtil.ArrayDimensions.ROW);
             if (!ArrayUtil.ArrayContainsValue(selection, 0)){
 
-                //submit the guess
+                //submit the guess and draw the result
                 try{
                     GuessValidationResult result = this.game.validateGuess(selection);
+                    drawGuessResult(currentRow, result);
 
                     //check the result
                     if(!checkHasGameEnded()){
                         //if the game hasn't ended, add result to results and move to the next row
                         results[rowCount - 3 - currentRow] = result;
-                        drawGuessResult(currentRow, result);
                         currentRow = rowCount - 3 - game.getCurrentRound();
                     }
                     currentSelectionIndex = 0;
@@ -409,6 +426,9 @@ public class MainActivity extends AppCompatActivity {
         currentSelectionIndex = 0;
     }
 
+    /**
+     * Displays results for all guesses
+     */
     private void displayGuessResults(){
         for (int i = 0; i < this.results.length; i++){
             GuessValidationResult result = this.results[i];
@@ -417,6 +437,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Draws a guess result in a row
+     * @param row
+     *  Row in which to draw the result
+     * @param result
+     *  The corresponding result
+     */
     private void drawGuessResult(int row, GuessValidationResult result){
         ImageView viewBlack = new ImageView(this);
         ImageView viewWhite = new ImageView(this);
