@@ -127,6 +127,9 @@ public class MainActivity extends AppCompatActivity {
             drawGuessButton();
     }
 
+    /**
+     * Draws a darker background behind the selection buttons
+     */
     private void drawButtonBackground(){
 
         //get imageView
