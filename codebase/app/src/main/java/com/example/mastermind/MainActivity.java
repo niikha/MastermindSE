@@ -406,11 +406,11 @@ public class MainActivity extends AppCompatActivity {
                 try{
                     GuessValidationResult result = this.game.validateGuess(selection);
                     drawGuessResult(currentRow, result);
+                    results[rowCount - 3 - currentRow] = result;
 
                     //check the result
                     if(!checkHasGameEnded()){
                         //if the game hasn't ended, add result to results and move to the next row
-                        results[rowCount - 3 - currentRow] = result;
                         currentRow = rowCount - 3 - game.getCurrentRound();
                     }
                     currentSelectionIndex = 0;
