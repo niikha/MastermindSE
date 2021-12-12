@@ -120,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
             drawPin(i, columnCount - 1, -1);
         }
 
+        drawExitButton();
+
         //Draw reset (if game is stopped) or guess button to bottom right corner
         if (gameStopped)
             drawResetButton();
@@ -263,6 +265,28 @@ public class MainActivity extends AppCompatActivity {
 
         //set on-click listener
         view.setOnClickListener(listener);
+
+        relativeLayout.addView(view, params);
+    }
+
+    private void drawExitButton(){
+
+        //get ImageView
+        ImageView view = new ImageView(this);
+        view.setImageResource(R.drawable.btn_exit_temp);
+
+        //set size
+        int size = (int)(relativeTextureSize() * 1.3);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size);
+
+        //set x and y
+        int x = colCoordinates[columnCount - 1 ]  - size / 2;
+        int y = rowCoordinates[0] - size / 2;
+        view.setX(x);
+        view.setY(y);
+
+        //set on-click listener
+        view.setOnClickListener(v -> exitGame());
 
         relativeLayout.addView(view, params);
     }
@@ -532,5 +556,12 @@ public class MainActivity extends AppCompatActivity {
         refreshGrid();
         displayCode();
         drawResultView(isGameWon);
+    }
+
+    /**
+     * On-Click listener for exit button; exit game back to main menu screen
+     */
+    private void exitGame(){
+        //TODO
     }
 }
