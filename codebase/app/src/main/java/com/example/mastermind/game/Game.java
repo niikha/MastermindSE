@@ -2,7 +2,11 @@ package com.example.mastermind.game;
 
 import com.example.mastermind.Util.ArrayUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Game {
@@ -101,15 +105,24 @@ public class Game {
         //set current round
         currentRound++;
 
-        //get number of black and white pins to be returned
+        //check for black and white pins
         int black = 0;
         int white = 0;
 
+        List<Integer> pinsCounted = new ArrayList<Integer>();
+
         for(int i = 0; i < codeLength; i++){
-            if (guess[i] == code [i])
+            if (guess[i] == code [i]) {
                 black++;
-            else if (ArrayUtil.ArrayContainsValue(code, guess[i]))
+                pinsCounted.add(guess[i]);
+            }
+        }
+
+        for(int i = 0; i < codeLength; i++){
+            if (ArrayUtil.ArrayContainsValue(code, guess[i]) && !pinsCounted.contains(guess[i])) {
                 white++;
+                pinsCounted.add(guess[i]);
+            }
         }
 
         //check if game is won or lost
