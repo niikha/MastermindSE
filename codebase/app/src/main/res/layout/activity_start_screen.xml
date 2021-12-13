@@ -3,14 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/StartGameScreen"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
 
 
-    <TextView
-        android:id="@+id/greeting"
+    <ImageView
+        android:id="@+id/logopic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
+        android:src="@drawable/logo"
         app:layout_constraintBottom_toBottomOf="@id/StartGame"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,10 +21,30 @@
         android:id="@+id/StartGame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Game"
+        android:text="Spiel Starten"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/greeting"
+        app:layout_constraintTop_toBottomOf="@id/logopic"
+        app:layout_constraintBottom_toBottomOf="@id/Spielregeln"/>
+
+    <Button
+        android:id="@+id/Spielregeln"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Spielregeln"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/StartGame"
+        app:layout_constraintBottom_toBottomOf="@id/Exit"/>
+
+    <Button
+        android:id="@+id/Exit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Spiel Verlassen"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Spielregeln"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

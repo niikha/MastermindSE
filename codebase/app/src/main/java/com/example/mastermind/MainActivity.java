@@ -564,6 +564,6 @@ public class MainActivity extends AppCompatActivity {
      * On-Click listener for exit button; exit game back to main menu screen
      */
     private void exitGame(){
-        //TODO
+        finish();
     }
 }

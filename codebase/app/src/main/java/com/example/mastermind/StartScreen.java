@@ -8,9 +8,14 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.mastermind.game.Game;
+
 public class StartScreen extends AppCompatActivity {
 
     private Button startGame;
+    private Button gameRules;
+    private Button exitGame;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -21,6 +26,8 @@ public class StartScreen extends AppCompatActivity {
         setContentView(R.layout.activity_start_screen);
 
         startGame = findViewById(R.id.StartGame);
+        gameRules = findViewById(R.id.Spielregeln);
+        exitGame = findViewById(R.id.Exit);
 
         startGame.setOnClickListener(v -> {
 
@@ -28,6 +35,10 @@ public class StartScreen extends AppCompatActivity {
 
             StartScreen.this.startActivity(mainActivity);
 
+        });
+
+        exitGame.setOnClickListener(v -> {
+            finish();
         });
 
     }
