@@ -445,7 +445,7 @@ public class MainActivity extends AppCompatActivity {
      * Creates a new game, resets grid and selection
      */
     private void startNewGame(){
-        this.game = new Game(8, 4, 8, true);
+        this.game = new Game(8, 4, 8, false);
         this.game.createRandomCode();
         gameStopped = false;
         this.results = new GuessValidationResult[rowCount-2];

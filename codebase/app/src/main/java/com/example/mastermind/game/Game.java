@@ -111,36 +111,16 @@ public class Game {
         //set current round
         currentRound++;
 
-        //check for black and white pins, NO DOUBLE VALUES IN CODE!
-        /*int black = 0;
-        int white = 0;
-
-        List<Integer> pinsCounted = new ArrayList<Integer>();
-
-        for(int i = 0; i < codeLength; i++){
-            if (guess[i] == code [i]) {
-                black++;
-                pinsCounted.add(guess[i]);
-            }
-        }
-
-        for(int i = 0; i < codeLength; i++){
-            if (ArrayUtil.ArrayContainsValue(code, guess[i]) && !pinsCounted.contains(guess[i])) {
-                white++;
-                pinsCounted.add(guess[i]);
-            }
-        }*/
-
-        //check for black and white pins, ONLY IF DOUBLE VALUES IN CODE!
+        //check for black and white pins
         int black = 0;
         int white = 0;
 
-        int[] cloneOfCode = new int[codeLength];
-        cloneOfCode = code.clone();
+        int[] cloneOfCode = code.clone();
 
         for(int i = 0; i < codeLength; i++){
             if (guess[i] == code [i]) {
                 black++;
+                //Remove value so it can't be counted again
                 cloneOfCode[i] = 0;
                 guess[i] = 9;
             }
