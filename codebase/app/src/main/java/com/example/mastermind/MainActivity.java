@@ -45,10 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         //get difficulty
         String difficulty = getIntent().getStringExtra("difficulty");
-        if (difficulty == "difficult")
-            doubleValues = true;
-        else
-            doubleValues = false;
+        doubleValues = difficulty.equals("difficult");
 
         //Get Gameboard Layout
          relativeLayout = findViewById(R.id.gameboard);
