@@ -558,8 +558,6 @@ public class MainActivity extends AppCompatActivity {
         refreshGrid();
         displayCode();
         drawResultView(isGameWon);
-        final MediaPlayer mp = MediaPlayer.create(this, R.raw.cr7_siu);
-        mp.start();
     }
 
     /**
