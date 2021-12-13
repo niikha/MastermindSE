@@ -478,19 +478,19 @@ public class MainActivity extends AppCompatActivity {
         //get texture for black number
         switch (result.GetBlack()){
             case 0:
-                viewBlack.setImageResource(R.drawable.b_null);
+                viewBlack.setImageResource(R.drawable.b_null_113x140);
                 break;
             case 1:
-                viewBlack.setImageResource(R.drawable.b_one);
+                viewBlack.setImageResource(R.drawable.b_one_113x140);
                 break;
             case 2:
-                viewBlack.setImageResource(R.drawable.b_two);
+                viewBlack.setImageResource(R.drawable.b_two_113x140);
                 break;
             case 3:
-                viewBlack.setImageResource(R.drawable.b_three);
+                viewBlack.setImageResource(R.drawable.b_three_113x140);
                 break;
             case 4:
-                viewBlack.setImageResource(R.drawable.b_four);
+                viewBlack.setImageResource(R.drawable.b_four_113x140);
                 break;
             default:
                 viewBlack.setImageResource(R.drawable.invalid_texture);
@@ -500,19 +500,19 @@ public class MainActivity extends AppCompatActivity {
         //get texture for white number
         switch (result.GetWhite()){
             case 0:
-                viewWhite.setImageResource(R.drawable.w_null);
+                viewWhite.setImageResource(R.drawable.w_null_113x140);
                 break;
             case 1:
-                viewWhite.setImageResource(R.drawable.w_one);
+                viewWhite.setImageResource(R.drawable.w_one_113x140);
                 break;
             case 2:
-                viewWhite.setImageResource(R.drawable.w_two);
+                viewWhite.setImageResource(R.drawable.w_two_113x140);
                 break;
             case 3:
-                viewWhite.setImageResource(R.drawable.w_three);
+                viewWhite.setImageResource(R.drawable.w_three_113x140);
                 break;
             case 4:
-                viewWhite.setImageResource(R.drawable.w_four);
+                viewWhite.setImageResource(R.drawable.w_four_113x140);
                 break;
             default:
                 viewWhite.setImageResource(R.drawable.invalid_texture);
