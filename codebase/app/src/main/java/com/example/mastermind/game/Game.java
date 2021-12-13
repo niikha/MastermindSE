@@ -118,28 +118,28 @@ public class Game {
         int[] cloneOfCode = code.clone();
 
         for(int i = 0; i < codeLength; i++){
-            if (guess[i] == code [i]) {
+            if (guess[i] == cloneOfCode[i]) {
                 black++;
                 //Remove value so it can't be counted again
-                cloneOfCode[i] = 0;
-                guess[i] = 9;
+                cloneOfCode[i] = -1;
+                guess[i] = -2;
             }
         }
 
         for(int i = 0; i < codeLength; i++){
             if (ArrayUtil.ArrayContainsValue(cloneOfCode, guess[i])) {
                 white++;
-                // Find Index of white element
+                // Find index of 'white' element
                 int indexOfWhiteElement = ArrayUtil.IndexOfValue(cloneOfCode, guess[i]);
-                cloneOfCode[indexOfWhiteElement] = 0;
+                cloneOfCode[indexOfWhiteElement] = -1;
             }
         }
 
         //check if game is won or lost
         if (black == codeLength)
-            gameWon=true;
-        else if (currentRound == maxRounds && gameWon == false)
-            gameLost=true;
+            gameWon = true;
+        else if (currentRound == maxRounds && !gameWon)
+            gameLost = true;
 
         return new GuessValidationResult(black, white);
     }
