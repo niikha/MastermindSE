@@ -1,5 +1,10 @@
 package com.example.mastermind.game;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.preference.PreferenceManager;
+
 import com.example.mastermind.Util.ArrayUtil;
 
 import java.util.ArrayList;
@@ -7,7 +12,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 
 public class Game {
 
@@ -64,7 +71,6 @@ public class Game {
     }
 
     public void createRandomCode(){
-
         for (int i = 0; i<codeLength; i++){
 
             //generate random value between 1 and the number of different colours
@@ -105,8 +111,8 @@ public class Game {
         //set current round
         currentRound++;
 
-        //check for black and white pins
-        int black = 0;
+        //check for black and white pins, NO DOUBLE VALUES IN CODE!
+        /*int black = 0;
         int white = 0;
 
         List<Integer> pinsCounted = new ArrayList<Integer>();
@@ -122,6 +128,30 @@ public class Game {
             if (ArrayUtil.ArrayContainsValue(code, guess[i]) && !pinsCounted.contains(guess[i])) {
                 white++;
                 pinsCounted.add(guess[i]);
+            }
+        }*/
+
+        //check for black and white pins, ONLY IF DOUBLE VALUES IN CODE!
+        int black = 0;
+        int white = 0;
+
+        int[] cloneOfCode = new int[codeLength];
+        cloneOfCode = code.clone();
+
+        for(int i = 0; i < codeLength; i++){
+            if (guess[i] == code [i]) {
+                black++;
+                cloneOfCode[i] = 0;
+                guess[i] = 9;
+            }
+        }
+
+        for(int i = 0; i < codeLength; i++){
+            if (ArrayUtil.ArrayContainsValue(cloneOfCode, guess[i])) {
+                white++;
+                // Find Index of white element
+                int indexOfWhiteElement = ArrayUtil.IndexOfValue(cloneOfCode, guess[i]);
+                cloneOfCode[indexOfWhiteElement] = 0;
             }
         }
 

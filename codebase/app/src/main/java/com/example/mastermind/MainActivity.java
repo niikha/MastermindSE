@@ -3,6 +3,7 @@ package com.example.mastermind;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
@@ -416,7 +417,7 @@ public class MainActivity extends AppCompatActivity {
                     currentSelectionIndex = 0;
                 }
                 catch (Exception e) {
-                    //T0D0: Fehlermeldung anzeigen
+                    System.out.println(e.getMessage());
                 }
             }
         }
@@ -443,7 +444,7 @@ public class MainActivity extends AppCompatActivity {
      * Creates a new game, resets grid and selection
      */
     private void startNewGame(){
-        this.game = new Game(8, 4, 8, false);
+        this.game = new Game(8, 4, 8, true);
         this.game.createRandomCode();
         gameStopped = false;
         this.results = new GuessValidationResult[rowCount-2];

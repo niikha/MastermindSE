@@ -22,6 +22,20 @@ public class ArrayUtil {
     }
 
     /**
+     * Gets the first index of integer in array
+     * @param array Array to be searched
+     * @param value Value to be searched for
+     * @return Returns index, if value wasn't found -1
+     */
+    public static int IndexOfValue(int[] array, int value) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == value)
+                return i;
+        }
+        return -1;
+    }
+
+    /**
      * Gets a specific row or column from a two-dimensional array
      * @param field
      *  The two-dimensional array
