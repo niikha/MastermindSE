@@ -31,7 +31,7 @@ public class StartScreen extends AppCompatActivity {
 
         startGame.setOnClickListener(v -> {
 
-            Intent mainActivity = new Intent(getApplicationContext(), MainActivity.class);
+            Intent mainActivity = new Intent(getApplicationContext(), DifficultyScreen.class);
 
             StartScreen.this.startActivity(mainActivity);
 
@@ -40,6 +40,11 @@ public class StartScreen extends AppCompatActivity {
         exitGame.setOnClickListener(v -> {
             finish();
         });
+
+        gameRules.setOnClickListener(v -> {
+
+                }
+                );
 
     }
 
