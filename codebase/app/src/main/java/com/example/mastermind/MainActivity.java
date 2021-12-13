@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final int rowCount = 11;
     private final int columnCount = 5;
+    private boolean doubleValues;
 
     private int[] colCoordinates;
     private int[] rowCoordinates;
@@ -41,6 +42,13 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+
+        //get difficulty
+        String difficulty = getIntent().getStringExtra("difficulty");
+        if (difficulty == "difficult")
+            doubleValues = true;
+        else
+            doubleValues = false;
 
         //Get Gameboard Layout
          relativeLayout = findViewById(R.id.gameboard);
@@ -445,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
      * Creates a new game, resets grid and selection
      */
     private void startNewGame(){
-        this.game = new Game(8, 4, 8, false);
+        this.game = new Game(8, 4, 8, doubleValues);
         this.game.createRandomCode();
         gameStopped = false;
         this.results = new GuessValidationResult[rowCount-2];
