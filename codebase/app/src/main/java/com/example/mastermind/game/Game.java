@@ -7,12 +7,14 @@ import android.preference.PreferenceManager;
 
 import com.example.mastermind.Util.ArrayUtil;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
@@ -71,19 +73,30 @@ public class Game {
     }
 
     public void createRandomCode(){
+        long seed = System.nanoTime();
+        Random randomSeed = threadRandom(seed).get();
         for (int i = 0; i<codeLength; i++){
 
             //generate random value between 1 and the number of different colours
-            int nextValue = ThreadLocalRandom.current().nextInt(variants) + 1;
+            int nextValue = randomSeed.nextInt(variants) + 1;
 
             //if code already contains value, generate more values until value is unique
             if(!doubleValuesAllowed)
                 while (ArrayUtil.ArrayContainsValue(code, nextValue)){
-                    nextValue = ThreadLocalRandom.current().nextInt(variants);
+                    nextValue = randomSeed.nextInt(variants);
                 }
 
             code[i] = nextValue;
         }
+    }
+
+    public static ThreadLocal<Random> threadRandom(final long seed) {
+        return new ThreadLocal<Random>(){
+            @Override
+            protected Random initialValue() {
+                return new Random(seed);
+            }
+        };
     }
 
     public void setCustomCode(int[] code) throws Exception {
