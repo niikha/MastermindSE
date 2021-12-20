@@ -45,9 +45,5 @@ public class StartScreen extends AppCompatActivity {
 
                 }
                 );
-
     }
-
-
-
 }
