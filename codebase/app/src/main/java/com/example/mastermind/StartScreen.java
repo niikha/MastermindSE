@@ -13,7 +13,7 @@ import com.example.mastermind.game.Game;
 public class StartScreen extends AppCompatActivity {
 
     private Button startGame;
-    private Button gameRules;
+    private Button howToPlay;
     private Button exitGame;
 
 
@@ -26,7 +26,7 @@ public class StartScreen extends AppCompatActivity {
         setContentView(R.layout.activity_start_screen);
 
         startGame = findViewById(R.id.StartGame);
-        gameRules = findViewById(R.id.Spielregeln);
+        howToPlay = findViewById(R.id.Spielregeln);
         exitGame = findViewById(R.id.Exit);
 
         startGame.setOnClickListener(v -> {
@@ -41,9 +41,12 @@ public class StartScreen extends AppCompatActivity {
             finish();
         });
 
-        gameRules.setOnClickListener(v -> {
+        howToPlay.setOnClickListener(v -> {
 
-                }
-                );
+            Intent mainActivity = new Intent(getApplicationContext(), HowToPlay.class);
+
+            StartScreen.this.startActivity(mainActivity);
+
+        });
     }
 }
